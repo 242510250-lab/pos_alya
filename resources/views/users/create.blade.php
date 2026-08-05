@@ -14,7 +14,6 @@
             <h4>Tambah Produk</h4>
         </div>
 
-
         <div class="card-body">
 
             <form action="{{ route('produk.store') }}"
@@ -25,11 +24,9 @@
 
                 @include('produk._form')
 
-
                 <button type="submit" class="btn btn-primary">
                     Simpan Produk
                 </button>
-
 
                 <a href="{{ route('produk.index') }}"
                    class="btn btn-secondary">

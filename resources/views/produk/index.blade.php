@@ -1,93 +1,379 @@
 @extends('layouts.app')
 
-@section('tittle', 'produk')
+@section('title', 'Produk')
 
 @section('content')
 
 @include('layouts.navbar')
 
-<h1>Halaman Produk</h1>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-@can('create', App\Models\produk::class)
-<a href="{{ route('produk.create') }}" method="GET" class="btn btn-primary mb-3">create</a>
-@endcan
+<style>
+body{
+    background:#f4f6f9;
+}
 
-<form action=""{{ route('produk.index') }} method="GET" class="mb-3">
-    <div> class="input-group">
-        <input>
-        type="text"
-        name="search"
-        value=""
-        class="form-control"
-        placeholder="search nama produk"
-    >
-      <button class="btn btn-outline-secondary" type="submit">
-        search
-      </button>
+.page-title{
+    font-weight:700;
+}
+
+.card{
+    border:none;
+    border-radius:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+}
+
+.table thead{
+    background:#0d6efd;
+    color:#fff;
+}
+
+.table tbody tr:hover{
+    background:#f8f9fa;
+}
+
+.btn{
+    border-radius:10px;
+}
+
+.product-img{
+    width:60px;
+    height:60px;
+    object-fit:cover;
+    border-radius:10px;
+    border:1px solid #ddd;
+}
+
+.search-box{
+    max-width:450px;
+}
+
+.badge{
+    font-size:.9rem;
+}
+
+.pagination{
+    margin-bottom:0;
+}
+</style>
+
+
+<div class="container py-4">
+
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="page-title">
+                Manajemen Produk
+            </h2>
+
+            <p class="text-muted mb-0">
+                Kelola seluruh data produk
+            </p>
+        </div>
+
+
+        <a href="{{ route('produk.create') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i>
+            Tambah Produk
+        </a>
+
     </div>
-</form>
 
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">User</th>
-      <th scope="col">Foto</th>
-      <th scope="col">Nama</th>
-      <th scope="col">Harga Beli</th>
-      <th scope="col">Harga Jual</th>
-      <th scope="col">Stok</th>
-      <th scope="col">Aksi</th>
-    </tr>
-  </thead>
-  <tbody>
-    @forelse ($products as $product)
-    <tr>
-      <th scope="row">{{ $products->firstitem() + $loop->index }}</th>
-      <td>{{ $product->user->name }}</td>
-      <td>
-        <img src="{{ asset('storage/'.$product->foto) }}"
-                 width="100"
-                 class="img-thumbnail">
-      </td>
-      <td>{{ $product->nama }}</td>
-      <td>{{ $product->harga_beli }}</td>
-      <td>{{ $product->harga_jual }}</td>
-      <td>{{ $product->stok }}</td>
-      <td class="d-flex gap-1">
-        @can('update', $product)
-        <a href="{{ route('produk.edit', $product) }}" class="btn btn-warning">Edit</a>
-        @endcan
-        ||
-        @can('delete', $product)
-        <form action="{{ route('produk.destory', $product) }}" method="" class="d-inline">
-            @csrf
-            @method('DELETE')
-            <button class="btn btn-danger" onclick="return confirm('apakah anda yakin akan menghapus user ini')">
-                Hapus
-            </button>
-        </form>
-    </td>
-    </tr>
-    @empty
-    <tr>
-        <td collspan=8><h1>Data tidak tersedia.</h1></td>
-    </tr>
-    @endforelse
-</body>
-</table>
-{{ $products->links() }}
-      <th scope="row">2</th>
-      <td>Jacob</td>
-      <td>Thornton</td>
-      <td>@fat</td>
-    </tr>
-    <tr>
-      <th scope="row">3</th>
-      <td>John</td>
-      <td>Doe</td>
-      <td>@social</td>
-    </tr>
-  </tbody>
-</table>
+
+
+    <div class="card mb-4">
+
+        <div class="card-body">
+
+
+            <form action="{{ route('produk.index') }}" method="GET">
+
+                <div class="input-group search-box">
+
+                    <span class="input-group-text">
+                        <i class="bi bi-search"></i>
+                    </span>
+
+
+                    <input
+                        type="text"
+                        name="search"
+                        value="{{ request('search') }}"
+                        class="form-control"
+                        placeholder="Cari nama produk...">
+
+
+                    <button class="btn btn-primary">
+                        Cari
+                    </button>
+
+
+                </div>
+
+            </form>
+
+
+        </div>
+
+    </div>
+
+
+
+    <div class="card">
+
+
+        <div class="card-header bg-white">
+
+            <h5 class="mb-0">
+                Daftar Produk
+            </h5>
+
+        </div>
+
+
+
+        <div class="table-responsive">
+
+
+            <table class="table table-hover align-middle mb-0">
+
+
+                <thead>
+
+                <tr>
+
+                    <th>No</th>
+                    <th>User</th>
+                    <th>Foto</th>
+                    <th>Nama Produk</th>
+                    <th>Harga Beli</th>
+                    <th>Harga Jual</th>
+                    <th>Stok</th>
+                    <th class="text-center">Aksi</th>
+
+                </tr>
+
+                </thead>
+
+
+
+                <tbody>
+
+
+                @forelse($products as $product)
+
+
+                <tr>
+
+
+                    <td>
+                        {{ $products->firstItem()+$loop->index }}
+                    </td>
+
+
+
+                    <td>
+                        {{ $product->user->name ?? '-' }}
+                    </td>
+
+
+
+                    <td>
+
+                        @if($product->foto)
+
+                            <img
+                                src="{{ asset('storage/'.$product->foto) }}"
+                                class="product-img">
+
+                        @else
+
+                            <span class="text-muted">
+                                Tidak Ada
+                            </span>
+
+                        @endif
+
+                    </td>
+
+
+
+
+                    <td>
+                        <strong>
+                            {{ $product->nama }}
+                        </strong>
+                    </td>
+
+
+
+                    <td>
+                        Rp {{ number_format($product->harga_beli,0,',','.') }}
+                    </td>
+
+
+
+                    <td>
+
+                        <strong class="text-success">
+                            Rp {{ number_format($product->harga_jual,0,',','.') }}
+                        </strong>
+
+                    </td>
+
+
+
+                    <td>
+
+
+                        @if($product->stok == 0)
+
+                            <span class="badge bg-danger">
+                                Habis
+                            </span>
+
+
+                        @elseif($product->stok <= 10)
+
+
+                            <span class="badge bg-warning text-dark">
+                                {{ $product->stok }}
+                            </span>
+
+
+                        @else
+
+
+                            <span class="badge bg-success">
+                                {{ $product->stok }}
+                            </span>
+
+
+                        @endif
+
+
+                    </td>
+
+
+
+                    <td>
+
+
+                        <div class="d-flex justify-content-center gap-2">
+
+
+                            <a
+                                href="{{ route('produk.edit',$product) }}"
+                                class="btn btn-warning btn-sm">
+
+                                <i class="bi bi-pencil-square"></i>
+
+                            </a>
+
+
+
+                            <form
+                                action="{{ route('produk.destroy',$product) }}"
+                                method="POST">
+
+                                @csrf
+                                @method('DELETE')
+
+
+                                <button
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Yakin ingin menghapus produk ini?')">
+
+                                    <i class="bi bi-trash"></i>
+
+                                </button>
+
+
+                            </form>
+
+
+                        </div>
+
+
+                    </td>
+
+
+                </tr>
+
+
+
+                @empty
+
+
+                <tr>
+
+                    <td colspan="8" class="text-center py-5">
+
+
+                        <i class="bi bi-box-seam fs-1 text-secondary"></i>
+
+
+                        <p class="mt-3 text-muted">
+                            Belum ada data produk.
+                        </p>
+
+
+                    </td>
+
+
+                </tr>
+
+
+                @endforelse
+
+
+                </tbody>
+
+
+            </table>
+
+
+        </div>
+
+
+
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+
+
+            <small class="text-muted">
+
+                Showing
+
+                {{ $products->firstItem() ?? 0 }}
+
+                -
+
+                {{ $products->lastItem() ?? 0 }}
+
+                of
+
+                {{ $products->total() }}
+
+                products
+
+            </small>
+
+
+
+            {{ $products->links('pagination::bootstrap-5') }}
+
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
 @endsection

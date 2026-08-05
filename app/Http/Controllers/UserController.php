@@ -92,19 +92,8 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        // 1. hapus item penjualan dari setiap produk
-        foreach ($user->produk as $produk) {
-            $produk->itemPenjualan()->delete();
-        }
-
-        // 2. hapus produk
-        $user->produk()->delete();
-
-        
-
-        return redirect()
-            ->route('admin.users')
-            ->with('success', 'User berhasil dihapus');
+        $user->delete();
+        return back()->with('success', 'User deleted');
     }
 
 

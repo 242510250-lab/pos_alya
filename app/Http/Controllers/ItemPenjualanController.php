@@ -151,7 +151,7 @@ return back();
      */
    public function destroy(ItemPenjualan $itempenjualan)
 {
-    $this->authorize('delete', $itempenjualan);
+   request()->user()->can('delete', $itempenjualan);
 
     DB::transaction(function () use ($itempenjualan) {
 

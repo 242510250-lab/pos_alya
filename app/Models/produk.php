@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\factories\HasFactory;
+use App\Models\User;
 
-class produk extends Model
+class Produk extends Model
 {
     use HasFactory;
 
     protected $table = 'produk';
-    
+
     protected $fillable = [
         'user_id',
         'foto',
@@ -19,9 +20,16 @@ class produk extends Model
         'harga_jual',
         'stok',
     ];
-    
-    public function itemPenjual()
+
+    // Relasi ke user
+    public function user()
     {
-        return $this->hasMany(itemPenjualan::class, "produk_id");
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    // Relasi ke item penjualan
+    public function itemPenjualan()
+    {
+        return $this->hasMany(ItemPenjualan::class, 'produk_id');
     }
 }

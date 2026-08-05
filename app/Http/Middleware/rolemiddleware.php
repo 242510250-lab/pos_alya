@@ -6,27 +6,30 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class rolemiddleware
+class RoleMiddleware
 {
     /**
      * Handle an incoming request.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  string  ...$roles
      */
-    public function handle(Request $request, Closure $next, $roles): Response
+    public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        // cek user jika belum login
+        // 1. Pastikan pengguna sudah login
         if (!$request->user()) {
-            return redirect()->route('login')
-            ->withErrors(['silakan login terlebih dahulu.']);
+            return redirect()->route('login');
         }
 
         $userRole = $request->user()->role->name;
 
-        // jika role user tidak sesuai route yang diminta
+        // 2. Cek apakah role pengguna ada di dalam daftar role yang diizinkan
         if (!in_array($userRole, $roles)) {
-            abort(403, 'Unauthorized');
+            abort(403, 'Unauthorized action.');
         }
+
+        // 3. Jika tidak punya akses, kunci dengan error 403 bawaan Laravel yang aman
         return $next($request);
     }
 }
+ 

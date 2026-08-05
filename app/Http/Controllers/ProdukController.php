@@ -14,114 +14,120 @@ class ProdukController extends Controller
 {
     use AuthorizesRequests;
 
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index(SearchRequest $request)
     {
-        $this->authorize('viewAny', Produk::class);
-
         $keyword = $request->input('search');
 
         $products = Produk::when($keyword, function ($query) use ($keyword) {
-                $query->where('nama', 'like', "%{$keyword}%");
-            })
-            ->orderBy('nama')
-            ->paginate(10)
-            ->withQueryString();
+            $query->where('nama', 'like', "%{$keyword}%");
+        })
+        ->orderBy('nama')
+        ->paginate(10)
+        ->withQueryString();
 
-        // Pastikan file Blade ada di resources/views/produk/index.blade.php
         return view('produk.index', compact('products'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+
     public function create()
     {
-        $this->authorize('create', Produk::class);
+        $produk = new Produk();
 
-        // Pastikan file Blade ada di resources/views/produk/create.blade.php
-        return view('produk.create');
+        return view('produk.create', compact('produk'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+
     public function store(StoreRequest $request)
     {
-        $this->authorize('create', Produk::class);
+        $data = [
+            'user_id' => Auth::id(),
+            'nama' => $request->nama,
+            'harga_beli' => $request->harga_beli,
+            'harga_jual' => $request->harga_jual,
+            'stok' => $request->stok,
+            'foto' => null,
+        ];
 
-        $data['user_id']   = Auth::id();
-        $data['nama']      = $request->name;
-        $data['harga_beli']  = $request->purchase_price;
-        $data['harga_jual']  = $request->selling_price;
-        $data['stok']        = $request->stock ?? true;
 
-        // Simpan file foto jika ada
+        // Upload foto baru
         if ($request->hasFile('foto')) {
-            $data['foto'] = $request->file('foto')->store('products', 'public');
+
+            $data['foto'] = $request->file('foto')
+                ->store('produk', 'public');
+
         }
 
+
         Produk::create($data);
+
 
         return redirect()
             ->route('produk.index')
             ->with('success', 'Product created successfully.');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+
+
     public function edit(Produk $produk)
     {
-        $this->authorize('update', $produk);
         return view('produk.edit', compact('produk'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+
+
     public function update(UpdateRequest $request, Produk $produk)
     {
-        $this->authorize('update', $produk);
-
         $data = [
-            'user_id'     => Auth::id(),
-            'nama'        => $request->name,
-            'harga_beli'  => $request->purchase_price,
-            'harga_jual'  => $request->selling_price,
-            'stok'        => $request->stock,
+            'user_id' => Auth::id(),
+            'nama' => $request->nama,
+            'harga_beli' => $request->harga_beli,
+            'harga_jual' => $request->harga_jual,
+            'stok' => $request->stok,
         ];
 
+
+        // Jika upload foto baru
         if ($request->hasFile('foto')) {
-            // Hapus foto lama jika ada
+
+
+            // hapus foto lama
             if ($produk->foto && Storage::disk('public')->exists($produk->foto)) {
+
                 Storage::disk('public')->delete($produk->foto);
+
             }
 
-            $data['foto'] = $request->file('foto')->store('products', 'public');
+
+            // simpan foto baru
+            $data['foto'] = $request->file('foto')
+                ->store('produk', 'public');
+
         }
+
 
         $produk->update($data);
 
+
         return redirect()
-            ->route('produk.edit', $produk->id)
+            ->route('produk.index')
             ->with('success', 'Product updated successfully.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+
+
     public function destroy(Produk $produk)
     {
-        $this->authorize('delete', $produk);
 
         if ($produk->foto && Storage::disk('public')->exists($produk->foto)) {
+
             Storage::disk('public')->delete($produk->foto);
+
         }
 
+
         $produk->delete();
+
 
         return redirect()
             ->route('produk.index')
