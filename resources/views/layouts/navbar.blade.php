@@ -1,8 +1,8 @@
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
 
-        <a class="navbar-brand" href="#">
-            POS
+        <a class="navbar-brand" href="{{ route('tentang') }}">
+            Alya Story
         </a>
 
         <button class="navbar-toggler" type="button"
@@ -37,6 +37,15 @@
                     </a>
                 </li>
                 @endif
+
+
+                {{-- Jenis Produk --}}
+                <li class="nav-item">
+                    <a class="nav-link {{ Request::is('jenisproduk*') ? 'active' : '' }}"
+                       href="{{ route('jenisproduk.index') }}">
+                        Jenis Produk
+                    </a>
+                </li>
 
 
                 {{-- Produk --}}

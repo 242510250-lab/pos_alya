@@ -6,6 +6,7 @@ use App\Http\Requests\Produk\StoreRequest;
 use App\Http\Requests\Produk\UpdateRequest;
 use App\Http\Requests\SearchRequest;
 use App\Models\Produk;
+use App\Models\JenisProduk;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -33,8 +34,9 @@ class ProdukController extends Controller
     public function create()
     {
         $produk = new Produk();
+        $jenisProduks = JenisProduk::orderBy('nama_jenis')->get();
 
-        return view('produk.create', compact('produk'));
+        return view('produk.create', compact('produk', 'jenisProduks'));
     }
 
 
@@ -42,6 +44,7 @@ class ProdukController extends Controller
     {
         $data = [
             'user_id' => Auth::id(),
+            'jenis_produk_id' => $request->jenis_produk_id,
             'nama' => $request->nama,
             'harga_beli' => $request->harga_beli,
             'harga_jual' => $request->harga_jual,
@@ -50,12 +53,8 @@ class ProdukController extends Controller
         ];
 
 
-        // Upload foto baru
         if ($request->hasFile('foto')) {
-
-            $data['foto'] = $request->file('foto')
-                ->store('produk', 'public');
-
+            $data['foto'] = $request->file('foto')->store('produk', 'public');
         }
 
 
@@ -71,7 +70,9 @@ class ProdukController extends Controller
 
     public function edit(Produk $produk)
     {
-        return view('produk.edit', compact('produk'));
+        $jenisProduks = JenisProduk::orderBy('nama_jenis')->get();
+
+        return view('produk.edit', compact('produk', 'jenisProduks'));
     }
 
 
@@ -80,6 +81,7 @@ class ProdukController extends Controller
     {
         $data = [
             'user_id' => Auth::id(),
+            'jenis_produk_id' => $request->jenis_produk_id,
             'nama' => $request->nama,
             'harga_beli' => $request->harga_beli,
             'harga_jual' => $request->harga_jual,
@@ -87,21 +89,13 @@ class ProdukController extends Controller
         ];
 
 
-        // Jika upload foto baru
         if ($request->hasFile('foto')) {
 
-
-            // hapus foto lama
             if ($produk->foto && Storage::disk('public')->exists($produk->foto)) {
-
                 Storage::disk('public')->delete($produk->foto);
-
             }
 
-
-            // simpan foto baru
-            $data['foto'] = $request->file('foto')
-                ->store('produk', 'public');
+            $data['foto'] = $request->file('foto')->store('produk', 'public');
 
         }
 
@@ -120,9 +114,7 @@ class ProdukController extends Controller
     {
 
         if ($produk->foto && Storage::disk('public')->exists($produk->foto)) {
-
             Storage::disk('public')->delete($produk->foto);
-
         }
 
 

@@ -6,21 +6,16 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     */
     public function rules(): array
     {
         return [
             'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'jenis_produk_id' => 'nullable|exists:jenis_produks,id',
             'nama' => 'required|string|max:255',
             'harga_beli' => 'required|integer|min:0',
             'harga_jual' => 'required|integer|min:0',
@@ -28,15 +23,14 @@ class StoreRequest extends FormRequest
         ];
     }
 
-    /**
-     * Custom validation messages.
-     */
     public function messages(): array
     {
         return [
             'foto.image' => 'File yang diupload harus berupa gambar.',
             'foto.mimes' => 'Format gambar harus JPG, JPEG, atau PNG.',
             'foto.max' => 'Ukuran gambar maksimal 2 MB.',
+
+            'jenis_produk_id.exists' => 'Jenis produk yang dipilih tidak valid.',
 
             'nama.required' => 'Nama produk wajib diisi.',
             'nama.max' => 'Nama produk maksimal 255 karakter.',

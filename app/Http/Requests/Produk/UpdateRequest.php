@@ -6,43 +6,39 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
             'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'name' => 'required|string|max:255',
-            'purchase+price' => 'reqired|integer|min:0',
-            'selling_price' => 'required|integer|min:0',
-            'stock' => 'required|integer|min:0',
+            'jenis_produk_id' => 'nullable|exists:jenis_produks,id',
+            'nama' => 'required|string|max:255',
+            'harga_beli' => 'required|integer|min:0',
+            'harga_jual' => 'required|integer|min:0',
+            'stok' => 'required|integer|min:0',
         ];
     }
+
     public function messages(): array
     {
         return [
-            'foto.image'      => 'File yang diupload harus gambar.',
-            'foto.mimes'      => 'Extensi gambar harus JPG, JPEG, PNG.',
-            'foto.max'        => 'Maksimal ukuran gambar 2MB.',
-            'name.required'   => 'Nama wajib diisi.',
-            'email.email'     => 'Format email tidak valid.',
-            'purchase_price.required' => 'purchase price wajib diisi.',
-            'purcgase_price.integer' => 'purchase price harus diisi bilangan bulat.',
-            'selling_price.required' => 'selling price wajib diisi.',
-            'selling_price.integer'  => 'selling price harus diisi bilangan bulat.',
-            'stock.required' => 'stock wajib diisi.',
-            'stock.integer' => 'stock harus diisi angka.',
+            'foto.image' => 'File yang diupload harus gambar.',
+            'foto.mimes' => 'Ekstensi gambar harus JPG, JPEG, PNG.',
+            'foto.max' => 'Maksimal ukuran gambar 2MB.',
+
+            'jenis_produk_id.exists' => 'Jenis produk yang dipilih tidak valid.',
+
+            'nama.required' => 'Nama produk wajib diisi.',
+            'harga_beli.required' => 'Harga beli wajib diisi.',
+            'harga_beli.integer' => 'Harga beli harus diisi bilangan bulat.',
+            'harga_jual.required' => 'Harga jual wajib diisi.',
+            'harga_jual.integer' => 'Harga jual harus diisi bilangan bulat.',
+            'stok.required' => 'Stok wajib diisi.',
+            'stok.integer' => 'Stok harus diisi angka.',
         ];
     }
 }
